@@ -38,8 +38,14 @@ class Message {
   final String text;
   final bool isMe;
   final DateTime time;
+  final String from;
 
-  Message({required this.text, required this.isMe, required this.time});
+  Message({
+    required this.text, 
+    required this.isMe, 
+    required this.time,
+    required this.from,
+  });
 }
 
 /// Layar chat 1–1
@@ -253,6 +259,7 @@ class _ChatPageState extends State<ChatPage> {
               text: text,
               isMe: false,
               time: DateTime.fromMillisecondsSinceEpoch(tsMs),
+              from: from,
             ));
           });
           _scrollToBottom();
@@ -464,7 +471,12 @@ class _ChatPageState extends State<ChatPage> {
 
     // Optimistic UI
     setState(() {
-      _messages.add(Message(text: text, isMe: true, time: DateTime.now()));
+      _messages.add(Message(
+        text: text, 
+        isMe: true, 
+        time: DateTime.now(),
+        from: _myId,
+      ));
     });
     _controller.clear();
     _focusNode.requestFocus();
@@ -651,8 +663,17 @@ class _MessageBubble extends StatelessWidget {
                     ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        isMe ? 'Me-${message.from}' : 'User-${message.from}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isMe ? Colors.green.shade700 : scheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
                       SelectableText(
                         message.text,
                         style: TextStyle(
